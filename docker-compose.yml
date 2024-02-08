@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  parking-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '${HOST_DB_PORT}:${DB_PORT}'
+    volumes:
+      - parking-db:/var/lib/postgresql/data
+  parking-app:
+    build:
+      context: .
+      target: ${NODE_ENV}
+      args:
+        - NODE_ENV=${NODE_ENV}
+        - APP_PORT=${APP_PORT}
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      - parking-db
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - ./src:/usr/src/app/src
+volumes:
+  parking-db:
